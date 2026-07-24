@@ -29,36 +29,38 @@ async function loadAppointments() {
 
     data.forEach(slot => {
 
-        const option = document.createElement("div");
+    const option = document.createElement("div");
 
-        option.innerHTML = `
-            <label>
-                <input type="checkbox" value="${slot.id}">
-                ${slot.date} ${slot.time}
-            </label>
-        `;
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = slot.id;
 
-        const checkbox = option.querySelector("input");
+    const label = document.createElement("label");
+    label.textContent = `${slot.date} ${slot.time}`;
 
-        if (slot.booked) {
-            checkbox.disabled = true;
-            option.innerHTML += " (Booked)";
-        } else {
+    if (slot.booked) {
+        checkbox.disabled = true;
+        label.textContent += " (Booked)";
+    } else {
 
-            checkbox.onchange = () => {
+        checkbox.addEventListener("change", () => {
 
-                if (checkbox.checked) {
-                    selectedAppointments.push(slot.id);
-                } else {
-                    selectedAppointments =
-                        selectedAppointments.filter(id => id !== slot.id);
-                }
+            if (checkbox.checked) {
+                selectedAppointments.push(slot.id);
+            } else {
+                selectedAppointments = selectedAppointments.filter(
+                    id => id !== slot.id
+                );
+            }
 
-                console.log(selectedAppointments);
-            };
-        }
+            console.log("Selected:", selectedAppointments);
+        });
+    }
 
-        container.appendChild(option);
+    option.appendChild(checkbox);
+    option.appendChild(label);
+
+    container.appendChild(option);
     });
 }
 
