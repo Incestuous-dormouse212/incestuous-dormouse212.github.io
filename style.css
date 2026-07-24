@@ -58,3 +58,22 @@ body {
     font-size: 16px;
     cursor: pointer;
 }
+
+
+/* Page headings */
+h1 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 24px;
+}
+
+p {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #666;
+}
