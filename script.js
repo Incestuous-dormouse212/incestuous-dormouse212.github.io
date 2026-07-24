@@ -8,7 +8,11 @@ const client = window.supabase.createClient(
 );
 
 
-// 2. Function to load appointments
+// Store selected appointments
+let selectedAppointments = [];
+
+
+// 2. Load appointments
 async function loadAppointments() {
 
     const { data, error } = await client
@@ -23,45 +27,34 @@ async function loadAppointments() {
     const container = document.getElementById("dates");
     container.innerHTML = "";
 
-
-    // 3. Create a checkbox for each available appointment
     data.forEach(slot => {
 
         const option = document.createElement("div");
 
+        option.innerHTML = `
+            <label>
+                <input type="checkbox" value="${slot.id}">
+                ${slot.date} ${slot.time}
+            </label>
+        `;
+
+        const checkbox = option.querySelector("input");
+
         if (slot.booked) {
-            option.innerHTML = `
-                <label>
-                    <input type="checkbox" disabled>
-                    ${slot.date} ${slot.time} (Booked)
-                </label>
-            `;
+            checkbox.disabled = true;
+            option.innerHTML += " (Booked)";
         } else {
-            option.innerHTML = `
-                <label>
-                    <input type="checkbox" value="${slot.id}">
-                    ${slot.date} ${slot.time}
-                </label>
-            `;
 
-            const checkbox = option.querySelector("input");
-
-            checkbox.onchange = async () => {
+            checkbox.onchange = () => {
 
                 if (checkbox.checked) {
-
-                    const { error } = await client
-                        .from("appointments")
-                        .update({ booked: true })
-                        .eq("id", slot.id);
-
-                    if (error) {
-                        console.error(error);
-                    } else {
-                        loadAppointments();
-                    }
+                    selectedAppointments.push(slot.id);
+                } else {
+                    selectedAppointments =
+                        selectedAppointments.filter(id => id !== slot.id);
                 }
 
+                console.log(selectedAppointments);
             };
         }
 
@@ -70,5 +63,35 @@ async function loadAppointments() {
 }
 
 
-// 4. Run when page loads
+// 3. Submit selected appointment
+async function submitAppointment() {
+
+    for (const id of selectedAppointments) {
+
+        const { error } = await client
+            .from("appointments")
+            .update({ booked: true })
+            .eq("id", id);
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+    }
+
+    alert("Appointment submitted!");
+
+    selectedAppointments = [];
+
+    loadAppointments();
+}
+
+
+// 4. Button connection
+document
+    .getElementById("submitAppointment")
+    .onclick = submitAppointment;
+
+
+// 5. Start page
 loadAppointments();
