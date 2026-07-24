@@ -8,8 +8,8 @@ const client = window.supabase.createClient(
 );
 
 
-// Store selected appointments
-let selectedAppointments = [];
+// Store selected appointment
+let selectedAppointment = null;
 
 
 // Format dates for display
@@ -25,12 +25,14 @@ function formatDate(dateString) {
 }
 
 
-// 2. Load appointments
+// Load appointments
 async function loadAppointments() {
 
     const { data, error } = await client
         .from("appointments")
-        .select("*");
+        .select("*")
+        .order("date")
+        .order("time");
 
     if (error) {
         console.error(error);
@@ -54,12 +56,11 @@ async function loadAppointments() {
     });
 
 
-    // Create sections for each day
+    // Create each day's section
     Object.keys(groupedDates).forEach(date => {
 
         const daySection = document.createElement("div");
         daySection.className = "day-section";
-
 
         const heading = document.createElement("h3");
         heading.textContent = formatDate(date);
@@ -67,87 +68,83 @@ async function loadAppointments() {
         daySection.appendChild(heading);
 
 
-      groupedDates[date].forEach(slot => {
+        groupedDates[date].forEach(slot => {
 
-    const option = document.createElement("label");
-    option.className = "appointment-option";
+            const option = document.createElement("label");
+            option.className = "appointment-option";
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = slot.id;
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "appointment";
+            radio.value = slot.id;
 
+            const labelText = document.createElement("span");
+            labelText.textContent = slot.time;
 
-    const labelText = document.createElement("span");
-    labelText.textContent = slot.time;
+            if (slot.booked) {
 
-
-           if (slot.booked) {
-
-    checkbox.disabled = true;
-    labelText.textContent += " (Booked)";
+                radio.disabled = true;
+                labelText.textContent += " (Booked)";
 
             } else {
 
-                checkbox.addEventListener("change", () => {
+                radio.addEventListener("change", () => {
 
-                    if (checkbox.checked) {
-                        selectedAppointments.push(slot.id);
-                    } else {
-                        selectedAppointments = selectedAppointments.filter(
-                            id => id !== slot.id
-                        );
+                    if (radio.checked) {
+                        selectedAppointment = slot.id;
+                        console.log("Selected:", selectedAppointment);
                     }
-
-                    console.log("Selected:", selectedAppointments);
 
                 });
 
             }
 
+            option.appendChild(radio);
+            option.appendChild(labelText);
 
-          option.appendChild(checkbox);
-option.appendChild(labelText);
-
-daySection.appendChild(option);
+            daySection.appendChild(option);
 
         });
-
 
         container.appendChild(daySection);
 
     });
+
 }
 
 
-// 3. Submit selected appointment
+// Submit appointment
 async function submitAppointment() {
 
-    for (const id of selectedAppointments) {
+    if (selectedAppointment === null) {
+        alert("Please select an appointment.");
+        return;
+    }
 
-        const { error } = await client
-            .from("appointments")
-            .update({ booked: true })
-            .eq("id", id);
+    const { error } = await client
+        .from("appointments")
+        .update({ booked: true })
+        .eq("id", selectedAppointment);
 
-        if (error) {
-            console.error(error);
-            return;
-        }
+    if (error) {
+        console.error(error);
+        return;
     }
 
     alert("Appointment submitted!");
 
-    selectedAppointments = [];
+    selectedAppointment = null;
 
     loadAppointments();
+
 }
 
 
-// 4. Button connection
+// Button connection
 document
     .getElementById("submitAppointment")
     .onclick = submitAppointment;
 
 
-// 5. Start page
+// Start page
 loadAppointments();
