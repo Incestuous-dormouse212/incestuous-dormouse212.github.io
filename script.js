@@ -67,23 +67,24 @@ async function loadAppointments() {
         daySection.appendChild(heading);
 
 
-        groupedDates[date].forEach(slot => {
+      groupedDates[date].forEach(slot => {
 
-            const option = document.createElement("div");
+    const option = document.createElement("label");
+    option.className = "appointment-option";
 
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.value = slot.id;
-
-
-            const label = document.createElement("label");
-            label.textContent = slot.time;
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = slot.id;
 
 
-            if (slot.booked) {
+    const labelText = document.createElement("span");
+    labelText.textContent = slot.time;
 
-                checkbox.disabled = true;
-                label.textContent += " (Booked)";
+
+           if (slot.booked) {
+
+    checkbox.disabled = true;
+    labelText.textContent += " (Booked)";
 
             } else {
 
@@ -104,10 +105,10 @@ async function loadAppointments() {
             }
 
 
-            option.appendChild(checkbox);
-            option.appendChild(label);
+          option.appendChild(checkbox);
+option.appendChild(labelText);
 
-            daySection.appendChild(option);
+daySection.appendChild(option);
 
         });
 
