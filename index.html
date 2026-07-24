@@ -1,26 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appointment Scheduler</title>
-
-    <link rel="stylesheet" href="style.css">
-</head>
 <body>
 
-  <header class="page-header">
-    <h1>Orchard Park Library Tech Help</h1>
-    <h2>Please pick a time for your appointment</h2>
-    <p>Select one or more available appointment times below.</p>
-</header>
-    
-    <div id="dates" class="date-grid"></div>
+    <header class="page-header">
 
-    <button id="submitAppointment">Submit Appointment</button>
-    
+        <img src="images/logo.png" alt="Orchard Park Library Logo" class="logo">
+
+        <div class="header-text">
+            <h1>Orchard Park Library Tech Help</h1>
+            <h2>Please Pick an Appointment Time</h2>
+            <p>Select an available appointment time below. You may only select one appointment at a time. Appointments are only one hour.</p>
+        </div>
+
+    </header>
+
+    <main class="container">
+
+        <div id="dates" class="date-grid"></div>
+
+        <button id="submitAppointment">Submit Appointment</button>
+
+    </main>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 
 </body>
-</html>
